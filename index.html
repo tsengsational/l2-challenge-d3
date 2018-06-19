@@ -253,7 +253,7 @@ function updateChart(newData) {
         x.domain(d3.extent(sorted, function(d) { return d.x; })).nice();
         y.domain(d3.extent(sorted, function(d) { return d.y; })).nice();
         
-        var svg = d3.select("body").select("#chart").select("svg").transition()
+        var svg = d3.select("body").select("#chart").select("svg").select("g").transition()
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
