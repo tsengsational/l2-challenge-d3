@@ -1,32 +1,110 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
+    :root {
+        --text-color: #58627f;
+        --axis-color: #a2a7b8;
+        --chart-line-color: #ececec;
+        --copy-color: #5064a5;
+    }
 
-body {
-  font: 10px sans-serif;
-}
+    h1.title {
+        font-weight: 300;
+        font-size: 40px;
+        margin-left: 35px;
+        color: var(--copy-color)
+    }
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
+    label.select-label {
+        color: var(--copy-color);
+        margin: 0 15px 0 35px;
+        font-size: 14px;
+    }
 
-.dot {
-  stroke: #000;
-}
+    .styleSelect {
+        width: 200px;
+        overflow: hidden;
+        height: 40px;
+        display: inline-block;
+        vertical-align:middle;
+        border: 2px var(--chart-line-color) solid;
+        position: relative;
+    }
+
+    #groups {
+        width: 218px;
+        height: 40px;
+        border: 0px var(--chart-line-color) solid;
+        padding-left: 16px;
+        font-size: 16px;
+        color: var(--copy-color);
+    }
+
+    #chart {
+        margin-top: 35px;
+    }
+
+    body {
+        font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: var(--axis-color);
+        shape-rendering: crispEdges;
+    }
+
+    .y.axis line {
+        stroke: var(--chart-line-color);
+    }
+
+    .axis .label {
+        stroke: var(--text-color);
+    } 
+    .tick text {
+        stroke: var(--text-color);
+    }
+
+    .dot {
+    stroke: #FFF;
+    z-index: 1;
+    }
+
+    .left-arrow, .right-arrow {
+        height: 2px;
+        width: 12px;
+        background-color: var(--copy-color);
+        position: absolute;
+    }
+
+    .left-arrow {
+        top: 19px;
+        right: 18px;
+        transform: rotate(45deg);
+    }
+
+    .right-arrow {
+        top: 19px;
+        right: 10px;
+        transform: rotate(-45deg);
+    }
 
 </style>
 <body>
-<h1>Scatter Plot</h1>
-<label for="groups">Select Group</label>
-<select name="group" id="groups">
-    <option value="I">I</option>
-    <option value="II">II</option>
-    <option value="III">III</option>
-    <option value="IV">IV</option>
-</select>
+<h1 class="title" >Scatter Plot</h1>
+<label class="select-label" for="groups">Select Group</label>
+<div class="styleSelect">
+    <select name="group" id="groups">
+        <option value="I">I</option>
+        <option value="II">II</option>
+        <option value="III">III</option>
+        <option value="IV">IV</option>
+    </select>
+    <div class="left-arrow" ></div>
+    <div class="right-arrow" ></div>
+</div>
+<div id="chart"></div>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
@@ -42,17 +120,18 @@ var x = d3.scale.linear()
 var y = d3.scale.linear()
     .range([height, 0]);
 
-var color = d3.scale.category10();
+// var color = d3.scale.category10();
 
 var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom")
-    .ticks(5);
+    .ticks(12);
 
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
-    .ticks(5);
+    .ticks(9)
+    .tickSize([-width]);
 
 function createChart (newData) {
     d3.csv("data.csv", function(error, data) {
@@ -67,7 +146,7 @@ function createChart (newData) {
         x.domain(d3.extent(sorted, function(d) { return d.x; })).nice();
         y.domain(d3.extent(sorted, function(d) { return d.y; })).nice();
         
-        var svg = d3.select("body").append("svg")
+        var svg = d3.select("body").select("#chart").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -79,9 +158,9 @@ function createChart (newData) {
             .call(xAxis)
             .append("text")
             .attr("class", "label")
-            .attr("x", width)
-            .attr("y", -6)
-            .style("text-anchor", "end")
+            .attr("x", ((width/2)))
+            .attr("y", 30)
+            .style("text-anchor", "middle")
             .text("X-Axis");
         
         svg.append("g")
@@ -90,7 +169,8 @@ function createChart (newData) {
             .append("text")
             .attr("class", "label")
             .attr("transform", "rotate(-90)")
-            .attr("y", 6)
+            .attr("x", (-height/2))
+            .attr("y", -30)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text("Y-Axis")
@@ -99,12 +179,12 @@ function createChart (newData) {
             .data(sorted)
             .enter().append("circle")
             .attr("class", "dot")
-            .attr("r", 3.5)
+            .attr("r", 5)
             .attr("cx", function(d) { 
                 return x(d.x);
                 })
             .attr("cy", function(d) { return y(d.y); })
-            .style("fill", function(d) { return color(d.group); });
+            .style("fill", function(d) { return "rgb(192,217,69)"; });
         
     });
 }
@@ -123,7 +203,7 @@ function updateChart(newData) {
         x.domain(d3.extent(sorted, function(d) { return d.x; })).nice();
         y.domain(d3.extent(sorted, function(d) { return d.y; })).nice();
         
-        var svg = d3.select("body").transition()
+        var svg = d3.select("body").select("#chart").transition()
         console.log(svg)
         svg.select(".x.axis")
             .duration(500)
@@ -141,7 +221,7 @@ function updateChart(newData) {
         
         dots.enter().append("circle")
             .attr("class", "dot")
-            .attr("r", 3.5)
+            .attr("r", 5)
             
 
         dots.transition()
