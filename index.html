@@ -1,96 +1,124 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style>
-    :root {
-        --text-color: #58627f;
-        --axis-color: #a2a7b8;
-        --chart-line-color: #ececec;
-        --copy-color: #5064a5;
-    }
+<head>
 
-    h1.title {
-        font-weight: 300;
-        font-size: 40px;
-        margin-left: 35px;
-        color: var(--copy-color)
-    }
+    <style>
+        :root {
+            --axis-color: #a2a7b8;
+            --chart-line-color: #ececec;
+            --copy-color: #5064a5;
+            --green: rgb(192,217,69);
+            --text-color: #58627f;
+            --white: #FFF;
+            --font: 'Roboto', sans-serif;
+        }
+    
+        body {
+            font: 10px sans-serif;
+            font-family: var(--font);
+        }
+    
+        h1.title {
+            color: var(--copy-color);
+            font-size: 40px;
+            font-weight: 300;
+            margin-left: 35px;
+        }
+    
+        label.select-label {
+            color: var(--copy-color);
+            font-size: 14px;
+            margin: 0 15px 0 35px;
+        }
+    
+        .styleSelect {
+            border: 2px var(--chart-line-color) solid;
+            display: inline-block;
+            height: 40px;
+            overflow: hidden;
+            position: relative;
+            vertical-align:middle;
+            width: 200px;
+        }
+    
+        #groups {
+            border: 0px var(--chart-line-color) solid;
+            color: var(--copy-color);
+            font-size: 16px;
+            height: 40px;
+            padding-left: 16px;
+            width: 218px;
+        }
+    
+        #chart {
+            margin-top: 35px;
+        }
+    
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: var(--axis-color);
+            shape-rendering: crispEdges;
+        }
+    
+        .y.axis line {
+            stroke: var(--chart-line-color);
+        }
+    
+        .axis .label {
+            stroke: var(--text-color);
+        } 
+        .tick text {
+            stroke: var(--text-color);
+        }
+    
+        .dot {
+        stroke: var(--white);
+        z-index: 1;
+        }
+    
+        .left-arrow, .right-arrow {
+            height: 2px;
+            width: 12px;
+            background-color: var(--copy-color);
+            position: absolute;
+        }
+    
+        .left-arrow {
+            top: 19px;
+            right: 18px;
+            transform: rotate(45deg);
+        }
+    
+        .right-arrow {
+            top: 19px;
+            right: 10px;
+            transform: rotate(-45deg);
+        }
+    
+        .tooltip {
+            position: absolute;
+            width: 40px;
+            height: 70px;
+            pointer-events: none;
+            padding: 16px;
+            background-color: var(--white);
+            border: 2px var(--green) solid;
+        }
+        .tooltip-x, .tooltip-y {
+            color: var(--green);
+            margin-bottom: 4px;
+            display: block;
+        }
+        .tooltip-x-value, .tooltip-y-value {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+    
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> 
+</head>
 
-    label.select-label {
-        color: var(--copy-color);
-        margin: 0 15px 0 35px;
-        font-size: 14px;
-    }
-
-    .styleSelect {
-        width: 200px;
-        overflow: hidden;
-        height: 40px;
-        display: inline-block;
-        vertical-align:middle;
-        border: 2px var(--chart-line-color) solid;
-        position: relative;
-    }
-
-    #groups {
-        width: 218px;
-        height: 40px;
-        border: 0px var(--chart-line-color) solid;
-        padding-left: 16px;
-        font-size: 16px;
-        color: var(--copy-color);
-    }
-
-    #chart {
-        margin-top: 35px;
-    }
-
-    body {
-        font: 10px sans-serif;
-    }
-
-    .axis path,
-    .axis line {
-        fill: none;
-        stroke: var(--axis-color);
-        shape-rendering: crispEdges;
-    }
-
-    .y.axis line {
-        stroke: var(--chart-line-color);
-    }
-
-    .axis .label {
-        stroke: var(--text-color);
-    } 
-    .tick text {
-        stroke: var(--text-color);
-    }
-
-    .dot {
-    stroke: #FFF;
-    z-index: 1;
-    }
-
-    .left-arrow, .right-arrow {
-        height: 2px;
-        width: 12px;
-        background-color: var(--copy-color);
-        position: absolute;
-    }
-
-    .left-arrow {
-        top: 19px;
-        right: 18px;
-        transform: rotate(45deg);
-    }
-
-    .right-arrow {
-        top: 19px;
-        right: 10px;
-        transform: rotate(-45deg);
-    }
-
-</style>
 <body>
 <h1 class="title" >Scatter Plot</h1>
 <label class="select-label" for="groups">Select Group</label>
@@ -107,20 +135,18 @@
 <div id="chart"></div>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
-
-
+var respWidth = window.innerWidth * 0.75
+var respHeight = window.innerHeight * 0.5
 
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    width = respWidth - margin.left - margin.right,
+    height = respHeight - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
     .range([0, width]);
 
 var y = d3.scale.linear()
     .range([height, 0]);
-
-// var color = d3.scale.category10();
 
 var xAxis = d3.svg.axis()
     .scale(x)
@@ -132,6 +158,10 @@ var yAxis = d3.svg.axis()
     .orient("left")
     .ticks(9)
     .tickSize([-width]);
+
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
 function createChart (newData) {
     d3.csv("data.csv", function(error, data) {
@@ -184,12 +214,32 @@ function createChart (newData) {
                 return x(d.x);
                 })
             .attr("cy", function(d) { return y(d.y); })
-            .style("fill", function(d) { return "rgb(192,217,69)"; });
+            .style("fill", function(d) { return "rgb(192,217,69)"; })
+            .on("mouseover", function(d) {
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                tooltip.html(
+                    `<label class="tooltip-x">X-value</label>
+                    <div class="tooltip-x-value">${d.x}</div>
+                    <label class="tooltip-y">Y-value</label>
+                    <div class="tooltip-x-value">${d.y}</div>
+                    `
+                    )
+                    .style("left", (d3.event.pageX + 5) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px");
+            })
+            .on("mouseout", function(d) {
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
         
     });
 }
 
 function updateChart(newData) {
+    console.log("updating", newData)
     d3.csv("data.csv", function(error, data) {
         if (error) throw error;
         
@@ -199,17 +249,19 @@ function updateChart(newData) {
         });
         
         let sorted = data.filter(datum => datum.group === newData)
-        console.log(sorted, x, y)
         x.domain(d3.extent(sorted, function(d) { return d.x; })).nice();
         y.domain(d3.extent(sorted, function(d) { return d.y; })).nice();
         
-        var svg = d3.select("body").select("#chart").transition()
-        console.log(svg)
+        var svg = d3.select("body").select("#chart").select("svg").transition()
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
         svg.select(".x.axis")
             .duration(500)
+            .attr("transform", "translate(0," + height + ")")
             .call(xAxis)
-            
-        
+                 
         svg.select(".y.axis")
             .duration(500)
             .call(yAxis)
@@ -227,11 +279,54 @@ function updateChart(newData) {
         dots.transition()
             .duration(500)
             .attr("cx", function(d) { return x(d.x); })
-            .attr("cy", function(d) { return y(d.y); })
-            .style("fill", function(d) { return color(d.group); });
-        
+            .attr("cy", function(d) { return y(d.y); })        
     });
 }
+
+function handleResize () {
+    respWidth = window.innerWidth * 0.75;
+    respHeight = window.innerHeight * 0.5;
+
+    margin = {top: 20, right: 20, bottom: 30, left: 40};
+    width = respWidth - margin.left - margin.right;
+    height = respHeight - margin.top - margin.bottom;
+    x = d3.scale.linear()
+    .range([0, width]);
+
+    y = d3.scale.linear()
+        .range([height, 0]);
+
+    xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        .ticks(12);
+
+    yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(9)
+        .tickSize([-width]);
+    
+    
+
+    let resizeData = d3.select("#groups").property('value');
+    updateChart(resizeData);
+}
+
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
 
 createChart("I")
 
@@ -241,5 +336,7 @@ d3.select("#groups")
         console.log(newData)
         updateChart(newData);
     })
+
+window.onresize = debounce(handleResize, 200)
 
 </script>
